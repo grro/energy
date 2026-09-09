@@ -17,12 +17,24 @@ class Energy:
         self.provider.add_listener(self.__on_update)
         self.pv.add_listener(self.__on_update)
         self.battery.add_listener(self.__on_update)
+        self.heater.add_listener(self.__on_update)
+        self.__provider_core_power_smoothen_recorder = WattRecorder()
 
+    def add_listener(self, listener):
+        self.__listeners.add(listener)
+
+    def __on_update(self):
+        self.__provider_core_power_smoothen_recorder.put(self.power_core_consumption)
+        [listener() for listener in self.__listeners]
 
     @property
     def power_core_consumption_5s(self) -> int:
-        downstream = self.provider.provider_power_downstream_5s + self.pv.power_downstream_5s + self.battery.power_downstream_5s
-        upstream = self.provider.provider_power_upstream_5s + self.battery.power_upstream_5s + self.heater.power
+        return self.__provider_core_power_smoothen_recorder.watt_per_hour(second_range=5)
+
+    @property
+    def power_core_consumption(self) -> int:
+        downstream = self.provider.provider_power_downstream + self.pv.power_downstream + self.battery.power_downstream
+        upstream = self.provider.provider_power_upstream + self.battery.power_upstream + self.heater.power
         return downstream - upstream
 
     @property
@@ -72,12 +84,6 @@ class Energy:
     @property
     def power_surplus_60m(self) -> int:
         return self.provider.provider_power_upstream_60m + self.battery.power_upstream_60m
-
-    def __on_update(self):
-        [listener() for listener in self.__listeners]
-
-    def add_listener(self, listener):
-        self.__listeners.add(listener)
 
     def start(self):
         pass
