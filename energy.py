@@ -2,6 +2,7 @@ from provider import Provider
 from pv import Pv
 from battery import Battery
 from heater import Heater
+from utils import WattRecorder
 
 
 
