@@ -17,7 +17,6 @@ class Energy:
         self.provider.add_listener(self.__on_update)
         self.pv.add_listener(self.__on_update)
         self.battery.add_listener(self.__on_update)
-        self.heater.add_listener(self.__on_update)
         self.__provider_core_power_smoothen_recorder = WattRecorder()
 
     def add_listener(self, listener):
