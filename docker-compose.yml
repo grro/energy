@@ -1,0 +1,28 @@
+services:
+  energy:
+    # Changed to explicitly use the latest version
+    image: grro/energy:latest
+    container_name: energy
+    restart: always
+    network_mode: "host"
+    volumes:
+      - /etc/energy:/app/energy
+    environment:
+      - port=8410
+      - provider=${PROVIDER}
+      - pv_all=${PV_ALL}
+      - pv_module1=${PV_MODULE1}
+      - pv_module2=${PV_MODULE2}
+      - pv_module3=${PV_MODULE3}
+      - pv_module4=${PV_MODULE4}
+      - battery=${BATTERY}
+      - heater=${HEATER}
+      - mqtt_addr=${MQTT_ADDR}
+    logging:
+      driver: "local"
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+# Example with all environment variables:
+# sudo PROVIDER="http://10.1.33.54" PV_ALL="http://10.1.33.53" PV_MODULE1="http://10.1.33.94" PV_MODULE2="http://10.1.33.95" PV_MODULE3="http://10.1.33.93" PV_MODULE4="http://10.1.33.96" BATTERY="http://10.1.33.100" HEATER="http://192.168.1.99:8422" MQTT_ADDR="0.0.0.0" docker compose up -d
